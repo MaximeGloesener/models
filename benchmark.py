@@ -135,7 +135,8 @@ def measure_latency_cpu(model, dummy_input, n_warmup=50, n_test=200):
     # time.perf_counter() returns time in s -> converted to ms (*1000)
     mean_syn = np.sum(timings) / n_test * 1000
     std_syn = np.std(timings) * 1000
-    print(f'{mean_syn/batch_size:.3f} ms +/- {std_syn/batch_size:.3f} ms')
+    print(f'Infer time GPU (ms/image): {mean_syn/batch_size:.3f} ms +/- {std_syn/batch_size:.3f} ms')
+    print(f'FPS GPU: {batch_size*1000/mean_syn}')
     return mean_syn, std_syn
 
 
@@ -168,7 +169,8 @@ def measure_latency_gpu(model, dummy_input, n_warmup=50, n_test=200):
 
     mean_syn = np.sum(timings) / n_test
     std_syn = np.std(timings)
-    print(f'{mean_syn/batch_size:.3f} ms +/- {std_syn/batch_size:.3f} ms')
+    print(f'Infer time GPU (ms/image): {mean_syn/batch_size:.3f} ms +/- {std_syn/batch_size:.3f} ms')
+    print(f'FPS GPU: {batch_size*1000/mean_syn}')
     return mean_syn, std_syn
 
 @torch.no_grad()
