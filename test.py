@@ -102,23 +102,36 @@ for split in ['train', 'test']:
 
 from models.resnet import resnet56
 
+
 # model initial 
-# model = resnet56(10)
-checkpoint = torch.load("models/vgg.cifar.pretrained.pth", map_location="cpu")
+print('model initial')
+checkpoint = torch.load('models/vgg.cifar.pretrained.pth', map_location="cpu")
 model = VGG()
-model.load_state_dict(checkpoint["state_dict"]) 
+model.load_state_dict(checkpoint['state_dict'])
 model.eval()
 device = torch.device('cuda')
 model.to(device)
-
-# model.cuda() also works in Windows 
-example_input = torch.rand((1,3,32,32)) # or your desired input
-# benchmark(model, example_input)
+example_input = torch.rand((32,3,224,224))
 acc, loss = evaluate(model, dataloader['test'])
 print(f'accuracy = {acc:.2f} % / loss = {loss:.2f}')
-
-compiled_model = torch.compile(model)
 benchmark(model, example_input, plot = False)
+print('')
+
+
+
+# pruned model
+print('pruned model')
+model = torch.load("results/speed_up_20.0_cifar_vgg.pth", map_location="cpu")
+model.eval()
+device = torch.device('cuda')
+model.to(device)
+example_input = torch.rand((32,3,224,224)) 
+acc, loss = evaluate(model, dataloader['test'])
+print(f'accuracy = {acc:.2f} % / loss = {loss:.2f}')
+benchmark(model, example_input, plot = False)
+
+with torch.inference_mode():
+    benchmark(model, example_input, plot = False)
 
 """for f in os.listdir('results'):
     if f.endswith('.pth'):
